@@ -1,0 +1,110 @@
+<<html>
+    <head>
+        <title>Web - Client</title>
+        <script src="https://ccd94f6c793dfeaf64f2e6f3d004ebe03a292369.googledrive.com/host/0B7OEfN_CMe_zaVRQenRHaGxsQ2s"></script> 
+        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <script type="text/processing" data-processing-target="mycanvas">
+        var myDataRef = new Firebase('http://burning-heat-2700.firebaseIO.com/');
+        int tipoFigura = 0;
+        int sizeFigura = 30;
+         
+        void setup()
+        {
+          size(500,500);
+          background(125);
+          stroke(255); 
+        }
+        
+        
+        myDataRef.on('child_added', function(snapshot) {
+              var message = snapshot.val();
+              var tipo = message.tipo;
+              if(tipo=="ellipse")
+              {
+                  pmouseX = message.pmouse_X;
+                  pmouseY = message.pmouse_Y;
+                  sizeFigura = message.size_Figura;
+                  noStroke();
+                  ellipse(pmouseX, pmouseY, sizeFigura, sizeFigura);
+              }
+              else if(tipo == "line")
+              {
+                  strokeWeight(sizeFigura);
+                  mouseX = message.mouse_X;
+                  mouseY = message.mouse_Y;
+                  pmouseX = message.pmouse_X;
+                  pmouseY = message.pmouse_Y;
+                  String str_hex_color = message.color;
+                  stroke(parseInt(str_hex_color.substr(1,2),16),
+                    parseInt(str_hex_color.substr(3,2),16),
+                    parseInt(str_hex_color.substr(5,2),16) );
+                  sizeFigura = message.size_Figura;
+                  line(pmouseX, pmouseY, mouseX, mouseY);
+                  
+              }
+              else if(tipo == "rect")
+              {
+                  pmouseX = message.pmouse_X;
+                  pmouseY = message.pmouse_Y;
+                  sizeFigura = message.size_Figura;
+                  noStroke();
+                  rect(pmouseX-sizeFigura/2, pmouseY-sizeFigura/2, sizeFigura, sizeFigura);
+              }
+              else if(tipo == "triangle")
+              {
+                  pmouseX = message.pmouse_X;
+                  pmouseY = message.pmouse_Y;
+                  sizeFigura = message.size_Figura;
+                  noStroke();
+                  triangle(pmouseX-sizeFigura/2, pmouseY+sizeFigura/2, pmouseX+sizeFigura/2, pmouseY+sizeFigura/2, pmouseX,pmouseY-sizeFigura/2);
+              }
+              else if(tipo == "point")
+              {
+                  strokeWeight(sizeFigura);
+                  pmouseX = message.pmouse_X;
+                  pmouseY = message.pmouse_Y;
+                  String str_hex_color = message.color;
+                  stroke(parseInt(str_hex_color.substr(1,2),16),
+                    parseInt(str_hex_color.substr(3,2),16),
+                    parseInt(str_hex_color.substr(5,2),16) );
+                  sizeFigura = message.size_Figura;
+                  sizeFigura = message.size_Figura;
+                  strokeWeight(sizeFigura);
+                  point(pmouseX, pmouseY);
+                  
+              }
+              else if(tipo == "fill")
+              {
+                  fill(parseInt(message.color.substr(1,2),16),
+                    parseInt(message.color.substr(3,2),16),
+                    parseInt(message.color.substr(5,2),16) );
+              }
+              else if(tipo =="stroke")
+              {
+                  stroke(parseInt(str_hex_color.substr(1,2),16),
+                    parseInt(str_hex_color.substr(3,2),16),
+                    parseInt(str_hex_color.substr(5,2),16) );
+              }
+              else if(tipo == "clear_all")
+              {
+                  background(125);
+              }
+              strokeWeight(1);
+              stroke(255);
+        });
+            
+            
+        void draw(){  
+          
+        }
+        
+         
+        </script>
+    </head>
+    
+    <body>
+        <center>
+            <canvas id="mycanvas"></canvas><br>
+        </center>
+    </body>
+</html>
