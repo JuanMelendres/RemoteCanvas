@@ -1,0 +1,162 @@
+<html>
+	<head>
+		<title>JavaScript</title>
+		<meta charset="utf-8">
+        <script src="https://ccd94f6c793dfeaf64f2e6f3d004ebe03a292369.googledrive.com/host/0B7OEfN_CMe_zaVRQenRHaGxsQ2s"></script>
+        <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+        <script type="text/processing" data-processing-target="mycanvas">
+        var myDataRef = new Firebase('http://burning-heat-2700.firebaseIO.com/');
+        var sizeFigura = 20;
+        var tipoFigura = 0;
+        void setup()
+        {
+            size(500,500);
+            background(125);
+            stroke(255);
+        }
+        void save_image()
+        {
+            save("image.png");
+        }
+        void clear_all()
+        {
+            background(125);
+            myDataRef.push({tipo:"clear_all"});
+
+        }
+        
+        void modify_size()
+        {
+            sizeFigura = parseInt(document.getElementById("size_figura").value);
+        }
+        void fill_color()
+        {
+            String str_hex_color = document.getElementById("favcolor").value;
+            fill(   parseInt(str_hex_color.substr(1,2),16),
+                    parseInt(str_hex_color.substr(3,2),16),
+                    parseInt(str_hex_color.substr(5,2),16) );
+            myDataRef.push({tipo:"fill",color: str_hex_color});
+        }
+        void stroke_color()
+        {
+            String str_hex_color = document.getElementById("favcolor").value;
+            stroke(   parseInt(str_hex_color.substr(1,2),16),
+                    parseInt(str_hex_color.substr(3,2),16),
+                    parseInt(str_hex_color.substr(5,2),16) );
+            myDataRef.push({tipo:"stroke",color: str_hex_color});
+        }
+        void dibuja()
+        {
+            tipoFigura = parseInt(document.getElementById("tipo_figura").value);
+
+            fill_color();
+
+
+          //[0 Linea , 1 Circulo, 2 Cuadrado, 3 triangulo 4 punto]
+            if(tipoFigura == 0)
+            {
+                stroke_color();
+                strokeWeight(sizeFigura);
+                String str_hex_color = document.getElementById("favcolor").value;
+                line(pmouseX, pmouseY, mouseX, mouseY);
+
+                myDataRef.push({tipo:"line",pmouse_X: pmouseX, pmouse_Y: pmouseY,size_Figura: sizeFigura,mouse_X:mouseX,mouse_Y:mouseY,color:str_hex_color});
+            }
+            else if(tipoFigura == 1)
+            {
+                noStroke();
+                ellipse(pmouseX, pmouseY, sizeFigura, sizeFigura);
+                noStroke();
+                myDataRef.push({tipo:"ellipse",pmouse_X: pmouseX, pmouse_Y: pmouseY,size_Figura: sizeFigura});
+            }
+            else if(tipoFigura == 2)
+            {
+                noStroke();
+                rect(pmouseX-sizeFigura/2, pmouseY-sizeFigura/2, sizeFigura, sizeFigura);
+                noStroke();
+                myDataRef.push({tipo:"rect",pmouse_X: pmouseX, pmouse_Y: pmouseY,size_Figura: sizeFigura,mouse_X:mouseX,mouse_Y:mouseY});
+            }
+            else if(tipoFigura == 3)
+            {   
+                noStroke();
+                triangle(pmouseX-sizeFigura/2, pmouseY+sizeFigura/2, pmouseX+sizeFigura/2, pmouseY+sizeFigura/2, pmouseX,pmouseY-sizeFigura/2);
+                noStroke();
+                myDataRef.push({tipo:"triangle",pmouse_X: pmouseX, pmouse_Y: pmouseY,size_Figura: sizeFigura,mouse_X:mouseX,mouse_Y:mouseY});
+            }
+            else if(tipoFigura == 4)
+            {
+                strokeWeight(sizeFigura);
+                stroke_color();
+                String str_hex_color = document.getElementById("favcolor").value;
+                point(pmouseX, pmouseY);
+                myDataRef.push({tipo:"point",pmouse_X: pmouseX, pmouse_Y: pmouseY,size_Figura: sizeFigura,mouse_X:mouseX,mouse_Y:mouseY});
+            }
+            
+        }
+        void draw()
+        {
+            
+        }
+        void mouseDragged()
+        {
+            dibuja();
+        }
+
+        void mouseClicked()
+        {
+            dibuja();
+        }
+        </script>
+        <script type="application/javascript">
+             var processingInstance;
+
+             function clear_processing() {
+                 switchSketchState("clear_all");
+             }
+
+             function modify_size() {
+                 switchSketchState("modify_size");
+             }
+
+             function save_image()
+             {
+                 switchSketchState("save_image");
+             }
+
+             function switchSketchState(function_name) 
+             {
+                 if (!processingInstance) 
+                 {
+                    processingInstance = Processing.getInstanceById('mycanvas');
+                 }
+                 if (function_name == "clear_all") {
+                     processingInstance.clear_all();
+                 } 
+                 else if(function_name == "modify_size")
+                 {
+                     processingInstance.modify_size();
+                 }
+                 else if(function_name == "save_image")
+                 {
+                     processingInstance.save_image();
+                 }
+             }
+ </script>
+	</head>
+	<body>
+        <center>
+            <canvas id="mycanvas"></canvas><br>
+            <button onclick="document.getElementById('tipo_figura').value='0';">Line</button>
+            <button onclick="document.getElementById('tipo_figura').value='1';">Circle</button>
+            <button onclick="document.getElementById('tipo_figura').value='2';">Square</button>
+            <button onclick="document.getElementById('tipo_figura').value='3';">Triangle</button>
+            <button onclick="document.getElementById('tipo_figura').value='4';">Point</button>
+            <button onclick="clear_processing();">Borrar</button><br>
+            5<input type="range" name="size_figura" id="size_figura" min="5" max="120" onchange="modify_size();">120<br>
+            <input type="color" name="favcolor" id="favcolor" value="#ff0000"><br>
+            <button onclick="save_image();">Guardar</button><br>
+
+<input type="hidden" name="tipo_figura" id="tipo_figura" value="0">
+        </center>
+	</body>
+</html>
